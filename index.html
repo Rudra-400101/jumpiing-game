@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>jumping game</title>
+  </head>
+
+  <!-- start css -->
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-image: url(https://img.freepik.com/free-vector/purple-alien-space-planet-game-cartoon-background_107791-19696.jpg?w=826&t=st=1689059393~exp=1689059993~hmac=abd4502712ed726e8a907372ce1ed79f8d93d910089071c16b92067421a78345);
+      background-repeat: no-repeat;
+      background-size: 100vw 100vh;
+      overflow: hidden;
+    }
+
+    /*optimus prime*/
+
+    #hero {
+      width: 80px;
+      position: absolute;
+      bottom: 40px;
+      left: 5vw;
+    }
+    .jump {
+      animation: jump 1s linear;
+    }
+    @keyframes jump {
+      50% {
+        bottom: 280px;
+      }
+      100% {
+        bottom: 40px;
+      }
+    }
+
+    /* villain */
+
+    #obstacal1 {
+      width: 120px;
+      position: absolute;
+      bottom: 50px;
+      left: 70vw;
+    }
+    .start {
+      animation: start 5s linear infinite;
+    }
+    @keyframes start {
+      0% {
+        left: 100vw;
+      }
+      100% {
+        left: -5vw;
+      }
+    }
+
+    /* starting page */
+
+    .starts {
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .s-btn {
+      width: 50vw;
+      height: 30vw;
+      background-color: #ffffff49;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      row-gap: 30px;
+      border: 2px solid white;
+      border-radius: 1vw;
+    }
+    button {
+      padding: 20px 25px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      border: 2px solid rgb(102, 22, 102);
+      border-radius: 0.5vw;
+      color: rgb(102, 22, 102);
+      background-color: #f3e0fb55;
+    }
+
+    /* onplay score */
+
+    #score {
+      float: right;
+      margin: 50px;
+      padding: 20px 25px;
+      border: 2px solid white;
+      border-radius: 0.2vw;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #1b0127;
+    }
+    .game-name {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: rgb(41, 5, 41);
+      margin-bottom: 50px;
+      letter-spacing: 3px;
+    }
+  </style>
+
+  <!-- html -->
+
+  <body>
+    <!-- onplay score -->
+
+    <span id="score"></span>
+
+    <!-- starting page -->
+
+    <div class="starts">
+      <div class="s-btn">
+        <span class="game-name">AUTOBOT ROLLOUT</span>
+        <button type="button" onclick="start()">start</button>
+        <span id="sresult"></span>
+      </div>
+    </div>
+
+    <!-- player -->
+
+    <img src="images/hero.png" alt="" id="hero" />
+    <img src="images/obstacal1.png" alt="" id="obstacal1" />
+
+    <!-- java script -->
+
+    <script>
+      // a onkeydown event to set our hero movment direction
+
+      document.onkeydown = (e) => {
+        // console.log(e.keyCode)
+        let hero = document.getElementById("hero");
+        y = parseInt(
+          window.getComputedStyle(hero, null).getPropertyValue("left")
+        );
+
+        // up arrow to make hero jump
+
+        if (e.keyCode == 38) {
+          hero.classList.add("jump");
+          hero.src = "images/jumpprime.png";
+          hero.style.width = "140px";
+          setTimeout(() => {
+            hero.classList.remove("jump");
+            hero.src = "images/hero.png";
+            hero.style.width = "80px";
+          }, 1000);
+          let jump = new Audio("gamesound/jump.mp3").play();
+        }
+        // right arrow to set right direction and use y<=1300 beacause our hero are going outside of frame
+        else if (e.keyCode == 39 && y <= 1300) {
+          hero.style.left = y + 40 + "px";
+        }
+        // left arrow to make hero direction back and use y>00 beacause our hero are going outside of frame
+        else if (e.keyCode == 37 && y >= 0) {
+          hero.style.left = y - 40 + "px";
+        }
+
+        // onclick enter start game
+        else if (e.keyCode == 13) {
+          start();
+        }
+      };
+
+      // make boolean because of after game over point are not increase
+      let sbolean = false;
+
+      // set audio for bgm
+
+      let bgm = new Audio("gamesound/bgm.mp3");
+      // make start function because if we click on start button our game start and everything reset
+
+      function start() {
+        let obstacal1 = document.getElementById("obstacal1");
+        obstacal1.classList.add("start");
+        obstacal1.src = "images/obstacal2.png";
+        let hero = document.getElementById("hero");
+        hero.src = "images/hero.png";
+        hero.style.bottom = "40px";
+        score = 0;
+        let startbox = document.querySelector(".starts");
+        startbox.style.display = "none";
+        document.getElementById("score").style.display = "inline";
+        sbolean = true;
+        bgm.play();
+      }
+      // now i make a score variable for score count
+
+      let score = 0;
+
+      // i have to make boolean because of score are increasing like 3 4. i used this boolean and set timeout for 1000
+
+      let bolean = true;
+
+      // use setInterval because of many reason 1. get hero and obstacal1 position to make game over when its getting close.
+      // 2. and get score value when hero surpass obstacal
+
+      setInterval(() => {
+        let obstacal1 = document.getElementById("obstacal1");
+        y = parseInt(
+          window.getComputedStyle(hero, null).getPropertyValue("left")
+        );
+        oy = window.parseInt(
+          getComputedStyle(obstacal1, null).getPropertyValue("left")
+        );
+        x = parseInt(
+          window.getComputedStyle(hero, null).getPropertyValue("bottom")
+        );
+        ox = window.parseInt(
+          getComputedStyle(obstacal1, null).getPropertyValue("bottom")
+        );
+
+        // measure left and bottom distance
+
+        ydistance = Math.abs(y - oy);
+        xdistance = Math.abs(x - ox);
+
+        // give condiion when hero and obstacal1 are close game over
+        // and change obstacal1 image  and reset animation duration and visible start box
+        if (ydistance < 90 && xdistance < 54 && sbolean) {
+          obstacal1.classList.remove("start");
+          obstacal1.src = "images/obstacal1.png";
+          obstacal1.style.animationDuration = "5s";
+
+          let hero = document.getElementById("hero");
+          hero.src = "images/defeat.png";
+          hero.style.width = "90px";
+          hero.style.bottom = "55px";
+
+          let startbox = document.querySelector(".starts");
+          startbox.style.display = "flex";
+
+          let sresult = document.getElementById("sresult");
+          sresult.innerText = "SCORE : " + score;
+          sresult.style.padding = "20px 25px";
+          sresult.style.fontSize = "1rem";
+          sresult.style.fontWeight = "800";
+          sresult.style.border = "2px solid white";
+          sresult.style.borderRadius = "0.2vw";
+
+          document.getElementById("score").style.display = "none";
+          sbolean = false;
+          bgm.pause();
+          let defeated = new Audio("gamesound/deafeated.wav").play();
+        }
+        // for calculate score
+        else if (ydistance < 93 && bolean) {
+          score += 1;
+          bolean = false;
+          setTimeout(() => {
+            bolean = true;
+          }, 1000);
+        }
+
+        // make animationDuration faster
+        else if (score == 10) {
+          obstacal1.style.animationDuration = "4s";
+        } else if (score == 20) {
+          obstacal1.style.animationDuration = "3s";
+        } else if (score == 30) {
+          obstacal1.style.animationDuration = "2.6s";
+        } else if (score == 40) {
+          obstacal1.style.animationDuration = "2.2s";
+        } else if (score == 50) {
+          obstacal1.style.animationDuration = "2s";
+        } else if (score == 70) {
+          obstacal1.style.animationDuration = "1.8s";
+        }
+      }, 100);
+
+      // on every second insert score in score box
+
+      const finalscore = () => {
+        document.getElementById("score").innerText = "SCORE : " + score;
+      };
+      setInterval(finalscore, 1000);
+    </script>
+  </body>
+</html>
